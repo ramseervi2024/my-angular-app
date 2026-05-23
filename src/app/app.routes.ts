@@ -7,6 +7,7 @@ import { Contact } from './contact/contact';
 import { GetStarted } from './get-started/get-started';
 import { Todos } from './todos/todos';
 import { TodoDetail } from './todo-detail/todo-detail';
+import { CreatePost } from './create-post/create-post';
 
 export const routes: Routes = [
   { path: '', component: MainContent },
@@ -22,6 +23,7 @@ export const routes: Routes = [
     path: 'todos', 
     children: [
       { path: '', component: Todos },
+      { path: 'create', component: CreatePost },
       { path: ':id', component: TodoDetail }
     ]
   },
