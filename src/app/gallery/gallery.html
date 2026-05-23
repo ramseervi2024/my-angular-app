@@ -1,0 +1,122 @@
+<div class="gallery-page">
+
+  <!-- Header -->
+  <div class="gallery-header">
+    <div class="gallery-title-row">
+      <!-- Images icon (Lucide SVG inline) -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none"
+        stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/>
+        <line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/>
+        <line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/>
+        <line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>
+      </svg>
+      <h1 class="gallery-title">Photo Gallery</h1>
+    </div>
+    <p class="gallery-subtitle">JSONPlaceholder API · 150 Photos</p>
+  </div>
+
+  <!-- Album Filter Tabs -->
+  <div class="filter-bar">
+    <!-- Filter icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </svg>
+    <button class="filter-btn" [class.active]="selectedAlbum === null" (click)="filterByAlbum(null)">All</button>
+    <button
+      *ngFor="let album of albums"
+      class="filter-btn"
+      [class.active]="selectedAlbum === album"
+      (click)="filterByAlbum(album)"
+    >Album {{ album }}</button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading photos...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-state">
+    <!-- ImageOff icon -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+      stroke="#991b1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="2" y1="2" x2="22" y2="22"/>
+      <path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/><line x1="13.5" y1="6.5" x2="22" y2="6.5"/>
+      <path d="M14 2H6a2 2 0 0 0-2 2v14l4-4h4.5"/>
+      <path d="M19.5 16.5 22 19V8a2 2 0 0 0-2-2h-2"/>
+    </svg>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Photo Grid -->
+  <div *ngIf="!isLoading && !error" class="photo-grid">
+    <div *ngFor="let photo of displayedPhotos" class="photo-card" (click)="openLightbox(photo)">
+      <img [src]="photo.thumbnailUrl" [alt]="photo.title" loading="lazy" (error)="onImageError($event)" />
+      <div class="photo-overlay">
+        <span class="photo-album">Album {{ photo.albumId }}</span>
+        <p class="photo-title">{{ photo.title }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!isLoading && totalPages > 1" class="pagination">
+    <button class="page-btn icon-btn" (click)="goToPage(1)" [disabled]="currentPage === 1" title="First">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+    </button>
+    <button class="page-btn icon-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1" title="Prev">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button *ngFor="let page of getPageNumbers()" class="page-btn" [class.active]="page === currentPage" (click)="goToPage(page)">{{ page }}</button>
+    <button class="page-btn icon-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages" title="Next">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <button class="page-btn icon-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages" title="Last">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<!-- Lightbox Modal -->
+<div *ngIf="selectedPhoto" class="lightbox-overlay" (click)="closeLightbox()">
+  <div class="lightbox-box" (click)="$event.stopPropagation()">
+
+    <!-- Close (X icon) -->
+    <button class="lightbox-close" (click)="closeLightbox()" title="Close">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <!-- Prev (ChevronLeft icon) -->
+    <button class="lightbox-nav prev" (click)="prevPhoto()" title="Previous">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+
+    <!-- Image with fallback -->
+    <img [src]="selectedPhoto.url" [alt]="selectedPhoto.title" class="lightbox-img" (error)="onImageError($event)" />
+
+    <!-- Next (ChevronRight icon) -->
+    <button class="lightbox-nav next" (click)="nextPhoto()" title="Next">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+
+    <!-- Info -->
+    <div class="lightbox-info">
+      <span class="lightbox-album">Album {{ selectedPhoto.albumId }} · Photo #{{ selectedPhoto.id }}</span>
+      <p class="lightbox-title">{{ selectedPhoto.title }}</p>
+    </div>
+
+  </div>
+</div>

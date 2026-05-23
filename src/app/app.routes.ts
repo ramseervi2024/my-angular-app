@@ -8,6 +8,7 @@ import { GetStarted } from './get-started/get-started';
 import { Todos } from './todos/todos';
 import { TodoDetail } from './todo-detail/todo-detail';
 import { CreatePost } from './create-post/create-post';
+import { Gallery } from './gallery/gallery';
 
 export const routes: Routes = [
   { path: '', component: MainContent },
@@ -28,5 +29,6 @@ export const routes: Routes = [
     ]
   },
   { path: 'contact', component: Contact },
+  { path: 'gallery', component: Gallery },
   { path: 'get-started', component: GetStarted },
 ];
