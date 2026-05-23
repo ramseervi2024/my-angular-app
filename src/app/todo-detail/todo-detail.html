@@ -1,0 +1,42 @@
+<div class="page-container">
+  <div style="margin-bottom: 2rem;">
+    <a routerLink="/todos" style="color: #007bff; text-decoration: none; font-weight: 500;">&larr; Back to Posts</a>
+  </div>
+
+  <div *ngIf="isLoading" style="text-align: center; padding: 3rem;">
+    <p style="font-size: 1.2rem; color: #666;">⏳ Loading details...</p>
+  </div>
+
+  <div *ngIf="error" style="background-color: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 6px;">
+    ❌ {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && post" class="detail-card">
+    <div class="detail-header">
+      <h2>Post #{{ post.id }}</h2>
+      <span class="badge">User {{ post.userId }}</span>
+    </div>
+    <div class="detail-body">
+      <div class="info-group">
+        <label>Title</label>
+        <p class="title-text">{{ post.title }}</p>
+      </div>
+      <div class="info-group">
+        <label>Body</label>
+        <p>{{ post.body }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comments Section -->
+  <div *ngIf="comments.length > 0" class="comments-section">
+    <h3 class="comments-title">💬 Comments ({{ comments.length }})</h3>
+    <div *ngFor="let comment of comments" class="comment-card">
+      <div class="comment-header">
+        <strong>{{ comment.name }}</strong>
+        <span class="comment-email">{{ comment.email }}</span>
+      </div>
+      <p class="comment-body">{{ comment.body }}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<div class="page-container">
+  <h1 class="page-title">Posts</h1>
+  <p class="page-description" style="margin-bottom: 2rem;">
+    Fetching data live from JSONPlaceholder API.
+  </p>
+
+  <div *ngIf="isLoading" style="text-align: center; padding: 3rem;">
+    <p style="font-size: 1.2rem; color: #666;">⏳ Loading posts...</p>
+  </div>
+
+  <div *ngIf="error" style="background-color: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+    ❌ {{ error }}
+  </div>
+
+  <div *ngIf="!isLoading && !error" class="todo-grid">
+    <a *ngFor="let post of posts" [routerLink]="['/todos', post.id]" class="todo-card">
+      <div class="status-indicator"></div>
+      <div class="todo-content">
+        <span class="todo-id">#{{ post.id }}</span>
+        <h3 class="todo-title">{{ post.title }}</h3>
+        <p class="todo-body">{{ post.body.slice(0, 80) }}...</p>
+      </div>
+    </a>
+  </div>
+</div>
